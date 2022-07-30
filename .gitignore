@@ -1,0 +1,5 @@
+
+.DS_Store
+backend/flaskr/__pycache__/
+frontend/node_modules/
+backend/__pycache__/
