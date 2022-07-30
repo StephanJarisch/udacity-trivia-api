@@ -11,6 +11,8 @@ Now on this website you can:
 - Sort questions by topic and
 - take a quiz
 
+## completed tasks
+
 1. Use Flask-CORS to enable cross-domain requests and set response headers.
 2. Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories.
 3. Create an endpoint to handle GET requests for all available categories.
@@ -21,5 +23,6 @@ Now on this website you can:
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions.
 9. Create error handlers for all expected errors including 400, 404, 422 and 500.
 
+## repository from Udacity
 
 If you are interessted to do it yourself, go to https://github.com/clc80/Trivia-App
