@@ -23,6 +23,25 @@ Now on this website you can:
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions.
 9. Create error handlers for all expected errors including 400, 404, 422 and 500.
 
+## Getting Started
+
+* Clone this repository.
+* Clone this repo:
+```git clone git@github.com:clc80/Trivia-App.git```
+* Change to the repo directory: ```cd Trivia-App```
+* Navigate to the frontend folder: ```cd frontend```
+* Install the dependencies: ```npm install```
+* Start the project: ```npm start```
+* Navigate to the backend folder: ``` cd backend```
+* Install dependencies with pip: ```pip install -r requirements.txt```
+* Run the development server:
+  ```
+  $ export FLASK_APP=flaskr
+  $ export FLASK_ENV=development # enables debug mode
+  $ flask run
+  ```
+* Navigate to Home page [http://localhost:3000](http://localhost:3000)
+
 ## repository from Udacity
 
 If you are interessted to do it yourself, go to https://github.com/clc80/Trivia-App
