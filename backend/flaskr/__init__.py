@@ -13,6 +13,7 @@ from models import db, setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -22,8 +23,14 @@ def create_app(test_config=None):
 
     @app.after_request
     def after_request(response):
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+        response.headers.add(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization"
+        )
+        response.headers.add(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PATCH, DELETE, OPTIONS"
+        )
         return response
 
     @app.route("/categories", methods=["GET"])
@@ -32,8 +39,8 @@ def create_app(test_config=None):
             # get categories ordered as dict
             categories_query = Category.query.order_by(Category.id).all()
             categories = {
-                elem.id : elem.type for elem in categories_query
-            } 
+                elem.id: elem.type for elem in categories_query
+            }
 
             return jsonify({
                 "success": True,
@@ -42,7 +49,7 @@ def create_app(test_config=None):
 
         except Exception as e:
             abort(500)
-        
+
         finally:
             db.session.close()
 
@@ -63,8 +70,10 @@ def create_app(test_config=None):
             # get categories
             categories_query = Category.query.order_by(Category.id).all()
             categories = {
-                elem.id : elem.type for elem in categories_query
+                elem.id: elem.type for elem in categories_query
             }
+            if len(questions[start:end]) == 0:
+                return jsonify(custom_abort(404)), 404
 
             return jsonify({
                 "success": True,
@@ -83,19 +92,21 @@ def create_app(test_config=None):
     def delete_questions(question_id):
         try:
             # get question which to delete
-            question_to_delete = db.session.query(Question).filter(Question.id == question_id).one_or_none()
+            question_to_delete = db.session.query(Question).filter(
+                Question.id == question_id
+            ).one_or_none()
 
             # abort with 'page not found' if question is not found
             if question_to_delete is None:
-                return jsonify(custom_abort(404)), 404 
-            
+                return jsonify(custom_abort(404)), 404
+
             # delete question
             question_to_delete.delete()
 
             return jsonify({
                 "success": True
             }), 200
-        
+
         except Exception as e:
             db.session.rollback()
             abort(500)
@@ -108,17 +119,22 @@ def create_app(test_config=None):
         try:
             # check if user sent an json object
             if request.json is None:
-                return jsonify(custom_abort(400)), 400 
+                return jsonify(custom_abort(400)), 400
 
             # check if required elements in request
             for elem in ["question", "answer", "difficulty", "category"]:
-                if not elem in request.json.keys():
-                    return jsonify(custom_abort(400)), 400 
-            
+                if elem not in request.json.keys():
+                    return jsonify(custom_abort(400)), 400
+
             # insert new Question
-            new_question = Question(request.json["question"], request.json["answer"], request.json["category"], request.json["difficulty"])
+            new_question = Question(
+                request.json["question"],
+                request.json["answer"],
+                request.json["category"],
+                request.json["difficulty"]
+            )
             new_question.insert()
-            
+
             return jsonify({
                 "success": True
             }), 201
@@ -135,17 +151,22 @@ def create_app(test_config=None):
         try:
             # check if user sent an json object
             if request.json is None:
-                return jsonify(custom_abort(400)), 400 
+                return jsonify(custom_abort(400)), 400
 
             # check if required elements in request
             for elem in ["searchTerm"]:
-                if not elem in request.json.keys():
-                    return jsonify(custom_abort(400)), 400 
-            
+                if elem not in request.json.keys():
+                    return jsonify(custom_abort(400)), 400
+
             # get questions like the search term
-            questions_query = Question.query.filter(Question.question.ilike('%' + request.json["searchTerm"] + '%')).all()
+            questions_query = Question.query.filter(
+                Question.question.ilike('%' + request.json["searchTerm"] + '%')
+            ).all()
             questions = [question.format() for question in questions_query]
-            
+
+            if len(questions) == 0:
+                return jsonify(custom_abort(404)), 404
+
             return jsonify({
                 "success": True,
                 "questions": questions,
@@ -163,19 +184,21 @@ def create_app(test_config=None):
     def question_from_category(category_id):
         try:
             # get questions of a specific category
-            questions_query = Question.query.order_by(Question.id).filter(Question.category == category_id).all()
+            questions_query = Question.query.order_by(
+                Question.id
+            ).filter(Question.category == category_id).all()
             questions = [question.format() for question in questions_query]
 
             # get categories to return 'currentCategory'
             categories_query = Category.query.order_by(Category.id).all()
             categories = {
-                elem.id : elem.type for elem in categories_query
-            }  
+                elem.id: elem.type for elem in categories_query
+            }
 
             # if category is not found abort
-            if not category_id in categories.keys():
+            if category_id not in categories.keys():
                 return jsonify(custom_abort(404)), 404
-            
+
             return jsonify({
                 "success": True,
                 "questions": questions,
@@ -195,26 +218,30 @@ def create_app(test_config=None):
         try:
             # check user input is json object
             if request.json is None:
-                return jsonify(custom_abort(400)), 400 
+                return jsonify(custom_abort(400)), 400
 
             # check if required elements in request
             for elem in ["previous_questions", "quiz_category"]:
-                if not elem in request.json.keys():
-                    return jsonify(custom_abort(400)), 400 
+                if elem not in request.json.keys():
+                    return jsonify(custom_abort(400)), 400
 
             # get questions of user chosen category
             category = request.json["quiz_category"]["id"]
             if category == 0:
                 questions_query = Question.query.all()
             else:
-                questions_query = Question.query.filter(Question.category == category).all()
-            questions = [question.format() for question in questions_query if not question.id in request.json["previous_questions"]]
+                questions_query = Question.query.filter(
+                    Question.category == category
+                ).all()
+            questions = [
+                question.format()
+                for question in questions_query
+                if question.id not in request.json["previous_questions"]
+            ]
 
             # if no questions left or found return just success
             if len(questions) == 0:
-                return jsonify({
-                    "success": True
-                })
+                return jsonify(custom_abort(404)), 404
 
             # otherwise return single question
             random_index = random.randint(0, len(questions)-1)
@@ -232,22 +259,20 @@ def create_app(test_config=None):
 
     def custom_abort(value: 404):
         # CUSTOM ERROR HANDLER - BECAUSE
-        # inside a try - except statement flask-abort does not work!! 
-        #   because abort(404) raises an error and therefore triggers Exception --> abort(500) 
-        #   reference: https://itecnote.com/tecnote/python-flask-abort-inside-try-block-behaviour/
+        # inside a try - except statement flask-abort does not work!!
         if value == 400:
             return {
-                "success": False, 
+                "success": False,
                 "error": 400,
                 "message": "bad request"
             }
         if value == 404:
             return {
-                "success": False, 
+                "success": False,
                 "error": 404,
                 "message": "Not found"
             }
-        
+
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
@@ -267,7 +292,7 @@ def create_app(test_config=None):
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
-            "success": False, 
+            "success": False,
             "error": 404,
             "message": "Not found"
             }), 404
@@ -287,6 +312,4 @@ def create_app(test_config=None):
             "error": 500,
             "message": "internal server error"
         }), 500
-
     return app
-
