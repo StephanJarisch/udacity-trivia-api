@@ -26,11 +26,13 @@ source env/bin/activate
 
 As for your credentials create a .env file which contains the following information:
 
+```bash
 DB_NAME='*your-db-name*'
 DB_TEST_NAME='*your-test-db-name*'
 DB_USER='*your-db-username*'
 DB_PASSWORD='*your-db-password*'
 DB_HOST='*your-host:port*'
+```
 
 3. **PIP Dependencies** - Once your virtual environment is setup and running, install the required dependencies by navigating to the `/backend` directory and running:
 
