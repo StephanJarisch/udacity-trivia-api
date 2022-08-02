@@ -8,6 +8,30 @@
 
 2. **Virtual Environment** - We recommend working within a virtual environment whenever using Python for projects. This keeps your dependencies for each project separate and organized. Instructions for setting up a virual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 
+Make sure to make use of a virtual environment. To install conda check [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+Via Conda:
+
+```bash
+conda create --name trivia python=3.7 pip
+conda activate trivia
+```
+
+If you have python3-venv installed:
+
+```bash
+python3 -m venv env
+source env/bin/activate
+```
+
+As for your credentials create a .env file which contains the following information:
+
+DB_NAME='*your-db-name*'
+DB_TEST_NAME='*your-test-db-name*'
+DB_USER='*your-db-username*'
+DB_PASSWORD='*your-db-password*'
+DB_HOST='*your-host:port*'
+
 3. **PIP Dependencies** - Once your virtual environment is setup and running, install the required dependencies by navigating to the `/backend` directory and running:
 
 ```bash
@@ -38,11 +62,11 @@ psql trivia < trivia.psql
 
 ### Run the Server
 
-From within the `./src` directory first ensure you are working using your created virtual environment.
-
-To run the server, execute:
+To run the server first declare two environment variables and finally run flask.
 
 ```bash
+export FLASK_APP=flaskr
+export FLASK_ENV=development
 flask run --reload
 ```
 
